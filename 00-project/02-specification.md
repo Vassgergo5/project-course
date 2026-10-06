@@ -148,9 +148,7 @@ A felület jelenleg csak kezdeti, demó jellegű tervezet, a pontos képernyőke
 | Mit jelent a „jóváhagyott tananyagegység”? | A részletek jóváhagyási lépése. | Szerző, témavezető | Egyeztetendő. Jelenleg a felhasználó a darabolás után jóváhagyja a részleteket. |
 | Kell-e bejelentkezés? | Adatok elkülönítése. | Szerző, témavezető | Egyeztetendő. Egyszerű e-mail-jelszavas bejelentkezéssel számolok. |
 | Melyik LLM-szolgáltatót és modellt használjam? | Magyar nyelvi minőség és a strukturált kimenet megbízhatósága. | Szerző, témavezető | Egyeztetendő. Az AI SDK miatt a modell cserélhető, ezért több modell is kipróbálható a prototípusban. |
-| Melyik tantárgy anyaga legyen a tesztkészlet? | A kutatási rész alapja. | Szerző, témavezető | Egyeztetendő. Egy tantárgy néhány fejezete, külön fejlesztési és kiértékelési részre bontva. |
 | Mekkora egyezést várjunk el az AI-pontozás és a kézi pontozás között? | Ez a 6. szakasz x% értéke. | Szerző, témavezető | Egyeztetendő. Javaslat: legfeljebb egypontos eltérés számít egyezésnek, célérték 80%, az első mérések után pontosítva. |
-| Elfogadható-e a brief költségre vonatkozó mérése tokenfelhasználásként? | A brief kötelezően kéri a költség szerinti összehasonlítást. | Szerző, témavezető | Egyeztetendő. A tokenfelhasználás pénzösszeg nélkül is kifejezi az erőforrásigényt. |
 | Milyen fájltípusok tölthetők fel? | A szövegkinyerés összetettsége és a darabolás módja. | Szerző, témavezető | Egyeztetendő. A terv a .txt, .md, .docx és a szöveges PDF-fájlokkal számol. Kérdés, hogy a prezentációalapú anyagok (.pptx) feldolgozására is szükség van-e. |
 
 ## 8. Kezdeti technikai javaslat
