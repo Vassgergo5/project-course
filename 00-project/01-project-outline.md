@@ -6,50 +6,48 @@ github: https://github.com/Vassgergo5/project-course
 ---
 # Tananyaghoz kötött feladatgeneráló és gyakorlóalkalmazás
 
-A projekt egy webalkalmazás, amely a felhasználó saját szöveges tananyagából AI segítségével feleletválasztós és rövid szöveges választ igénylő gyakorlókérdéseket generál. A központi feladat az, hogy a generált tartalom megbízható és visszakövethető legyen. Ezért minden kérdés a tananyag egy verziózott, jóváhagyott részletéhez kötődik, csak a felhasználó jóváhagyása után kerül a feladatbankba, és a tananyag változásakor a rendszer felülvizsgálandóként jelöli meg. A felhasználó a jóváhagyott kérdésekből seed alapján reprodukálható gyakorlósorokat old meg. A feleletválasztós válaszokat a rendszer determinisztikusan, a rövid válaszokat előre rögzített szempontrendszer alapján AI-val értékeli, bizonytalan esetben felülvizsgálati jelzéssel. A kutatási rész összehasonlítja a teljes dokumentumra és a visszakeresett részletekre épülő generálást, valamint a véletlenszerű és a feltételeket kezelő feladatsor-összeállítást. A megoldás a Next.js (TypeScript), a PostgreSQL, a Prisma és a Zod technológiákra épül, az LLM-hívások kizárólag szerveroldalon futnak. A projekt végére a felhasználó a saját jegyzetéből készült, ellenőrzött kérdésekkel gyakorolhat, és követheti a haladását.
+A projekt egy webalkalmazás, amely szöveges tananyagok tanulását és gyakorlását segíti. A felhasználó feltölti a jegyzetét, amelyet a rendszer egységes belső formátumra konvertál és részekre bont. A tananyag privát maradhat, vagy a tulajdonosa nyilvánosan megoszthatja, így mások is tanulhatnak belőle, használhatják a kérdéseit, vagy saját kérdéseket generálhatnak hozzá. A kérdéseket AI generálja feleletválasztós és rövid szöveges formában. Minden kérdés egy verziózott tananyagrészletre hivatkozik, amelyből kiderül, hogy a kérdés a tananyag ismeretével megválaszolható, és a felhasználó ez alapján hagyja jóvá. A tananyag változásakor az érintett kérdések felülvizsgálandó állapotba kerülnek. A kutatási rész összehasonlítja a teljes dokumentumra és a visszakeresett részletekre (RAG) épülő generálást, valamint a véletlenszerű és a feltételes feladatsor-összeállítást. A tervezett megoldás SvelteKit, PostgreSQL, Prisma és Zod alapú, az AI-integráció a DeepSeek Harness keretrendszerrel, kizárólag szerveroldalon készül. A konkrét nyelvi modell kiválasztása a későbbiekben történik.
 
 ## Célok
 
-- **Elsődleges cél:** Működő, verziókezelt gyakorlóalkalmazás elkészítése, amelyben az AI által generált kérdések visszakövethetően a felhasználó tananyagához kötődnek, emberi jóváhagyáson mennek át, és a tananyag változásakor automatikusan felülvizsgálandóvá válnak. Emellett cél a generálási és a feladatsor-összeállítási módszerek mérhető összehasonlítása.
-- **Célfelhasználók / érintettek:** Diákok és hallgatók, akik a saját jegyzetükből szeretnének megbízható, a tananyaggal összeegyeztethető gyakorlófeladatokon keresztül gyakorolni vagy a számonkéréseikre felkészülni. Érintett még a témavezető és az értékelők.
+- **Elsődleges cél:** Működő tanuló- és gyakorlóalkalmazás, amelyben az AI által generált kérdések visszakövethetően a tananyaghoz kötődnek, emberi jóváhagyáson mennek át, és a tananyagok megoszthatók. Emellett a generálási és a feladatsor-összeállítási módszerek mérhető összehasonlítása.
+- **Célfelhasználók / érintettek:** Elsősorban diákok és hallgatók, akik saját vagy megosztott jegyzetekből szeretnének megbízhatóan, a tananyaggal összeegyeztethetően tanulni, gyakorolni. Másodsorban oktatók, akik megoszthatják a tananyagaikat. Érintett még a témavezető és az értékelők.
 - **Mérhető sikerkritériumok:**
-  - A feladatbankban lévő minden kérdés hivatkozik egy jóváhagyott tananyagrészletre (részletazonosító, verzió, tartalom-hash), és a kérdés forrásidézete szó szerint megtalálható a hivatkozott részletben.
-  - Egy tananyagrészlet módosítása után a hozzá kötött kérdések 100%-a felülvizsgálandó állapotba kerül, a nem érintett részletek kérdései változatlanok maradnak.
-  - Ugyanazzal a seeddel, paraméterekkel és feladatbank-állapottal összeállított gyakorlósor azonos kérdéseket ad azonos sorrendben.
-  - Minden LLM-kimenet sémavalidáción esik át, mielőtt adatbázisba kerül, és a sémának nem megfelelő kimenetet a rendszer nem menti el.
-  - A teljes dokumentumra és a visszakeresett részletekre épülő generálás minősége, késleltetése és költsége tananyagonként elkülönített tesztkészleten össze van hasonlítva.
-  - A véletlenszerű és a feltételes feladatsor-összeállítás témalefedettsége, kérdésismétlődése, teljesíthetősége és összeállítási ideje össze van hasonlítva.
-  - A rövid válaszok AI-értékelésének egyezése a kézzel ellenőrzött mintákkal össze van hasonlítva.
-  - A tartományi logika (darabolás, a kérdések állapotátmenetei és érvénytelenítése, duplikátumszűrés, gyakorlósor-összeállítás, feleletválasztós értékelés) adatbázis és LLM nélkül is futtatható, és automatizált tesztek fedik le.
-- **Korlátok:** Az alkalmazás TypeScriptben, Next.js App Routerrel készül, a szerveroldali logika Server Actionökben és API route-okban fut. Az adatokat a PostgreSQL tárolja, az elérés a Prismán keresztül történik. A Zod-sémák az LLM-kimenettől egészen az adatbázisig ellenőrzik az adatokat. LLM-hívás csak szerveroldalon történhet. A felületnek mobilon és asztali gépen is használhatónak kell lennie. Az első változat szöveges tananyagra és két feladattípusra korlátozódik. Az AI hibája vagy elérhetetlensége nem okozhat adatvesztést. API-kulcs, más hitelesítő adat, valamint személyes vagy éles adat nem kerülhet a repóba vagy a kliensoldalra.
+  - Minden kérdés hivatkozik egy tananyagrészletre (azonosító, verzió, tartalom-hash), amelyből kiderül, hogy a kérdés a tananyag ismeretével megválaszolható.
+  - Egy részlet módosítása után a hozzá kötött kérdések 100%-a felülvizsgálandó lesz minden ráépülő kérdésbankban, a többi kérdés változatlan marad.
+  - Más kérdésbankja nem módosítható, és egy gyakorlósor mindig egyetlen tananyagból áll.
+  - Azonos seed, paraméterek és kérdésbank-állapot mellett a gyakorlósor azonos.
+  - Minden LLM-kimenet sémavalidáción esik át, érvénytelen kimenet nem mentődik.
+  - A két generálási mód és a két összeállítási módszer tesztkészleten össze van hasonlítva a briefben előírt mérőszámok szerint.
+  - A rövid válaszok AI-értékelése a kézi pontozással legalább 70%-ban egyezik (legfeljebb egypontos eltérés), a célérték az első mérések után pontosítható.
+  - A tartományi logika adatbázis és LLM nélkül futtatható, és automatizált tesztek fedik le.
+- **Korlátok:** TypeScript és SvelteKit, PostgreSQL és Prisma, Zod-validáció az LLM-kimenettől az adatbázisig. AI-hívás csak szerveroldalon. Az első változat .txt bemenetet és két feladattípust kezel. Az AI hibája nem okozhat adatvesztést, titkos kulcs és személyes adat nem kerülhet a repóba.
 
 ## Hatókör
 
 ### Benne van a hatókörben
 
-- Szöveges tananyag feltöltése, verziózása, részletekre bontása (chunking) és a tananyagegységek jóváhagyása.
-- Feleletválasztós és rövid szöveges válaszos kérdések AI-alapú generálása, forrásrészlethez és forrásidézethez kötve.
-- Kérdések manuális ellenőrzése, szerkesztése, jóváhagyása vagy elutasítása, szerkeszthető nehézségi kategóriákkal.
-- Közel azonos kérdések felismerése és kezelése.
-- A tananyagváltozás észlelése és az érintett kérdések érvénytelenítése (függőségi modell), újrageneráláskor a kézi javításokkal összevethető tervezettel.
-- Gyakorlósor összeállítása témalefedettség, feladatszám, nehézség és korábbi próbálkozások alapján, seed segítségével reprodukálhatóan, a feladatbank elégtelenségének kezelésével.
-- Determinisztikus értékelés a feleletválasztós kérdéseknél, szempontrendszer-alapú (rubric) AI-értékelés és felülvizsgálati jelzés a rövid válaszos kérdések esetén.
-- Hibás kérdés vagy értékelés jelentése.
-- Felhasználói haladáskövetés témánként.
-- Reszponzív, mobilon is használható webes felület.
-- A generálási módok és a feladatsor-összeállítási módszerek összehasonlítása, valamint a kérdésminőség és az AI-értékelés mérése reprodukálható értékelési eljárással.
-- Automatizált tesztek a tartományi logikához, futtatási útmutató és mintaadatok.
+- Egyetlen fióktípus, a szerep a tananyaghoz és a kérdésbankhoz fűződő viszonytól függ.
+- Tananyag feltöltése bővíthető konverterekkel (először .txt), verziózás, darabolás és a darabolás kézi ellenőrzése.
+- Privát vagy nyilvános tananyag. Nyilvános tananyagnál a tulajdonos kérdésbankja is nyilvános, a tanulók utólag generált új kérdései a saját privát bankjukba kerülnek.
+- Megosztott tananyag bővítése saját jegyzetekkel, az eredeti módosítása nélkül. A bővített tananyag nem osztható tovább.
+- AI-alapú kérdésgenerálás részlethivatkozással, jóváhagyás, szerkesztés, nehézségi kategóriák és duplikátumszűrés.
+- Érvénytelenítés tananyagváltozáskor minden ráépülő kérdésbankban, újrageneráláskor a kézi javítással összevethető tervezettel.
+- Tanulási mód több tananyag párhuzamos tanulásával, és gyakorlósor egy tananyag több fejezetéből, témalefedettség, feladatszám és korábbi próbálkozások alapján, reprodukálhatóan, a kérdésbank elégtelenségének kezelésével.
+- Determinisztikus feleletválasztós és rubric-alapú AI-értékelés felülvizsgálati jelzéssel.
+- RAG-alapú generálás, jelentés hibás tartalomról, haladáskövetés, reszponzív felület.
+- Reprodukálható értékelési eljárás, automatizált tesztek, futtatási útmutató és mintaadatok.
 
 ### Nincs benne a hatókörben
 
 - Hivatalos vizsgáztatás, osztályzás.
-- Kép-, hang- vagy videóalapú tananyag feldolgozása (OCR, átírás).
-- Kettőnél több feladattípus, valamint hosszú, esszé jellegű válaszok értékelése.
-- Oktatói feladatmegosztás és ismétlési ütemezés (lehetséges későbbi bővítések).
-- Saját nyelvi modell tanítása vagy finomhangolása.
-- Valós idejű közös szerkesztés, közösségi funkciók, ranglisták.
-- Natív mobilalkalmazás.
+- Kép-, hang- és videóalapú tananyag (OCR, átírás).
+- Kettőnél több feladattípus és esszéjellegű válaszok.
+- Különböző tananyagok keverése egy gyakorlósorban.
+- Külön oktatói fióktípus, saját modell tanítása, valós idejű közös szerkesztés.
 
 ## Jegyzetek
 
-Az első változat egyetlen, előre kiválasztott tantárgy néhány fejezetét használja. Ezek egy részén történik a fejlesztés és a promptok hangolása, a többi fejezetet pedig a kiértékelés tesztadatkészleteként tartom fenn. A kérdések jóváhagyása a forrásrészlettel való összevetésen alapul, nem a felhasználó előzetes tudásán. A rendszer ezért azt garantálja, hogy a kérdés a feltöltött tananyaghoz hű, azt nem, hogy maga a tananyag helyes. A jó kérdésminőségből a projekt nem következtet tanulási eredményességre. A hatókörön kívüli bővítések csak akkor merülhetnek fel, ha a forráskötés, az érvénytelenítés, a jóváhagyási folyamat és az értékelés megbízhatóan működik. A darabolás pontos szabályai, a visszakeresés módja, a bizonytalanság mérése és az LLM-szolgáltató kiválasztása a specifikációban és a kezdeti technikai javaslatban dől el.
+Az első változat egy tantárgy néhány fejezetét használja. Ezek egy részén fejlesztek és hangolom a promptokat, a többi a kiértékelés tesztkészlete. A rendszer azt garantálja, hogy a kérdés a tananyaghoz hű, azt nem, hogy a tananyag helyes, és a kérdésminőségből nem következtet tanulási eredményességre.
+
+Lehetséges bővítés az ellenőrzött oktatói jelölés, a tananyag linken keresztüli megosztása, további konverterek (.md, .docx, szöveges PDF, .pptx), az ismétlési ütemezés és a natív mobilalkalmazás Capacitorral. Ezek csak az alapfunkciók megbízható működése után kerülnek sorra.
