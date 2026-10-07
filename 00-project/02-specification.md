@@ -7,71 +7,89 @@ Kapcsolódó outline: [01-project-outline.md](01-project-outline.md)
 
 ## 1. Szereplők és jogosultságok
 
-Az alkalmazásban egyféle felhasználói fiók van. A felhasználó a saját tananyagát tölti fel, ő hagyja jóvá a kérdéseket, és ő gyakorol belőlük. A jóváhagyás a forrásrészlettel való összevetést jelenti, ehhez nem kell az anyag előzetes ismerete.
+Egyfajta felhasználói fiók van, a szerepet a tananyaghoz vagy kérdésbankhoz fűződő viszony határozza meg. Ugyanaz a személy lehet az egyik tananyagnál tulajdonos, a másiknál tanuló. Mindenkinek tananyagonként saját kérdésbankja van, amelyet csak ő módosíthat. A megosztott tananyagot a tanuló saját jegyzetekkel bővítheti, de az eredetit nem módosíthatja.
 
 | Szerep | Igény | Felelősség / hozzáférés |
 | --- | --- | --- |
-| Felhasználó (diák, hallgató) | A saját jegyzetéből szeretne megbízható gyakorlófeladatokkal gyakorolni vagy számonkérésre készülni | Feltölti és módosítja a tananyagát, jóváhagyja a részleteket és a kérdéseket, gyakorlósorokat old meg, követi a haladását, és jelentheti a hibás kérdést vagy értékelést. Csak a saját adataihoz fér hozzá. |
-| Szerző (fejlesztő) | A generálás, az értékelés és az összeállítás mérhető összehasonlítása | Összeállítja az ellenőrzött tesztkészletet, és parancssori szkripttel futtatja az értékelési eljárást. |
-| Témavezető / értékelő | A sikerkritériumok és a megvalósítás minőségének ellenőrzése | A felhasználói felületen kipróbálja a fő folyamatokat, és a mintaadatokon újrafuttathatja az értékelést. |
+| Tananyag tulajdonosa | A saját jegyzetéből tanulni, esetleg megosztani | Feltölti és módosítja a tananyagot, ellenőrzi a darabolást, privát vagy nyilvános állapotot választ. Nyilvános tananyagnál a kérdésbankja is nyilvános. |
+| Tanuló | Saját vagy megosztott tananyagból tanulni és gyakorolni | Tanul, a megosztott tananyagot saját jegyzetekkel bővítheti, kérdéseket generál a privát kérdésbankjába, használja a tulajdonos nyilvános kérdésbankját, gyakorol és jelentheti a hibás tartalmat. |
+| Ellenőrzött oktató (lehetséges) | Jelezni, hogy egy tartalmat szakértőként validált | Normál fiók egy oktatói jelöléssel, amely az általa validált tartalmakon megjelenik. |
+| Szerző (fejlesztő) | A módszerek mérhető összehasonlítása | Összeállítja a tesztkészletet, és szkripttel futtatja az értékelést. |
+| Témavezető / értékelő | A megvalósítás ellenőrzése | Kipróbálja a fő folyamatokat, és újrafuttathatja az értékelést. |
 
 ## 2. Use case-ek / user storyk
 
-### UC1: Tananyag feltöltése
+### UC1: Tananyag feltöltése és darabolása
 
-- **Szereplő:** Felhasználó
+- **Szereplő:** Tulajdonos
 - **Előfeltétel:** A felhasználó be van jelentkezve.
 - **Fő folyamat:**
-  1. A felhasználó feltölt egy szöveges tananyagot (.txt, .md, .docx vagy szövegréteggel rendelkező PDF), vagy beilleszti a szövegét.
-  2. A rendszer kinyeri a szöveget és a felismerhető címsorokat.
-  3. A felhasználó ellenőrzi a kinyert szöveget, és szükség esetén javítja.
-  4. A rendszer részletekre bontja a szöveget. Ha vannak benne címsorok, azok mentén, ha nincsenek, bekezdéscsoportok mentén. Minden részlethez kulcsot, témát és tartalom-hash-t rendel.
-  5. A felhasználó átnézi és jóváhagyja a részleteket.
-- **Alternatív / hibafolyamatok:** Hibás, üres vagy szövegréteg nélküli (szkennelt) fájl esetén a rendszer hibát jelez, és nem hoz létre verziót.
-- **Utófeltétel:** A tananyag első verziója és jóváhagyott részletei eltárolódtak.
+  1. A felhasználó feltölt vagy beilleszt egy .txt tananyagot.
+  2. A konverter a belső formátumra alakítja, és felismeri a fejezeteket.
+  3. A rendszer részletekre bontja, és mindegyikhez kulcsot és tartalom-hash-t rendel.
+  4. A felhasználó ellenőrzi a darabolást, szükség esetén részleteket összevon vagy szétvág, majd jóváhagyja.
+- **Alternatív / hibafolyamatok:** Nem támogatott, hibás vagy üres fájlnál a rendszer hibát jelez, és nem hoz létre verziót.
+- **Utófeltétel:** A tananyag privát állapotban, jóváhagyott darabolással eltárolódott.
 
-### UC2: Kérdések generálása és jóváhagyása
+### UC2: Megosztás és könyvtárhoz adás
 
-- **Szereplő:** Felhasználó
-- **Előfeltétel:** A tananyagnak van jóváhagyott részlete.
+- **Szereplő:** Tulajdonos, Tanuló
+- **Előfeltétel:** A darabolás jóvá van hagyva.
 - **Fő folyamat:**
-  1. A felhasználó kiválaszt egy témát, a kérdéstípust, a nehézséget és a darabszámot.
-  2. A rendszer szerveroldalon meghívja az LLM-et, sémával validálja a választ, és ellenőrzi, hogy a forrásidézet szó szerint szerepel-e a részletben.
-  3. A rendszer megjelöli a meglévőkhöz közel azonos kérdéseket, és az érvényeseket vázlatként menti.
-  4. A felhasználó a kiemelt forrásidézettel összevetve jóváhagyja, javítja vagy elutasítja a kérdéseket.
-- **Alternatív / hibafolyamatok:** Hibás vagy idézet nélküli LLM-kimenet nem mentődik. Ha az LLM nem érhető el, a rendszer hibát jelez, a meglévő adatok változatlanok maradnak.
-- **Utófeltétel:** A jóváhagyott kérdések a feladatbankba kerülnek, az eredeti AI-változat és a kézi javítás is megmarad.
+  1. A tulajdonos nyilvánossá teszi a tananyagot.
+  2. Egy másik felhasználó megkeresi és a könyvtárához adja.
+  3. A tanuló tanulhat belőle, bővítheti saját jegyzetekkel, használhatja a tulajdonos kérdésbankját, és saját kérdéseket generálhat a privát bankjába.
+- **Alternatív / hibafolyamatok:** Visszavont megosztásnál a tananyag új felhasználóknak nem érhető el.
+- **Utófeltétel:** A tananyag megjelenik a tanuló könyvtárában. Az eredetit nem módosíthatja, a saját bővítményei külön tárolódnak (lásd UC6).
 
-### UC3: Tananyag módosítása
+### UC3: Kérdések generálása és jóváhagyása
 
-- **Szereplő:** Felhasználó
+- **Szereplő:** Tanuló (Tulajdonosként is)
+- **Előfeltétel:** A könyvtárban van jóváhagyott darabolású tananyag.
+- **Fő folyamat:**
+  1. A felhasználó kiválaszt egy vagy több fejezetet, a kérdéstípust, a nehézséget és a darabszámot.
+  2. A rendszer szerveroldalon meghívja az LLM-et, sémával validálja a választ, és ellenőrzi, hogy a kérdés létező tananyagrészletre hivatkozik-e.
+  3. A közel azonos kérdéseket megjelöli, az érvényeseket vázlatként menti.
+  4. A felhasználó a saját tudása és a hivatkozott részlet alapján jóváhagyja, javítja vagy elutasítja őket.
+- **Alternatív / hibafolyamatok:** Hibás vagy részlethivatkozás nélküli kimenet nem mentődik. Elérhetetlen LLM esetén a meglévő adatok változatlanok maradnak.
+- **Utófeltétel:** A jóváhagyott kérdések a felhasználó kérdésbankjába kerülnek, az AI-eredeti és a javítás is megmarad.
+
+### UC4: Tanulás és gyakorlás
+
+- **Szereplő:** Tanuló
+- **Előfeltétel:** A könyvtárban van tananyag jóváhagyott kérdésekkel.
+- **Fő folyamat:**
+  1. A felhasználó tanulási módban fejezetenként halad, akár több tananyagban párhuzamosan.
+  2. Gyakorláshoz kiválaszt egy tananyagot, egy vagy több fejezetet, a nehézséget, a feladatszámot és a kérdésbankot.
+  3. A rendszer seed alapján összeállítja a sort a lefedettség és a korábbi próbálkozások alapján, duplikátumok nélkül.
+  4. A rendszer a feleletválasztós válaszokat determinisztikusan, a rövideket rubric alapján AI-val értékeli.
+- **Alternatív / hibafolyamatok:**
+  - Kevés kérdésnél a rendszer megnevezi a nem teljesíthető feltételt, és kisebb sort ajánl.
+  - A bizonytalan AI-értékelés felülvizsgálati jelzést kap, és elfogadásig nem számít bele a haladásba.
+  - A hibás kérdés vagy értékelés jelenthető. Saját kérdésnél a kérdés felülvizsgálandó lesz, másénál a jelentés a tulajdonoshoz kerül.
+- **Utófeltétel:** A válaszok és a haladás tananyagonként és fejezetenként eltárolódtak.
+
+### UC5: Tananyag módosítása
+
+- **Szereplő:** Tulajdonos
 - **Előfeltétel:** Létezik tananyag jóváhagyott kérdésekkel.
 - **Fő folyamat:**
-  1. A felhasználó feltölti a tananyag új változatát.
+  1. A tulajdonos feltölti az új változatot, amelynek darabolását újra jóváhagyja.
   2. A rendszer kulcs és hash alapján összeveti a részleteket az előző verzióval.
-  3. A megváltozott részletek kérdései felülvizsgálandók, a megszűnt részletek kérdései érvénytelenek lesznek, és kikerülnek a gyakorlásból.
-  4. A felhasználó a felülvizsgálandó kérdést újra jóváhagyja, javítja, elveti vagy újragenerálja. Újrageneráláskor az új tervezet a korábbi kézi javítás mellett jelenik meg.
-- **Utófeltétel:** A feladatbankban csak a tananyag aktuális verziójához hű kérdések vannak.
+  3. A megváltozott részletek kérdései felülvizsgálandók, a megszűntekéi érvénytelenek lesznek minden ráépülő kérdésbankban.
+  4. Az érintettek értesítést kapnak, és kérdéseiket újra jóváhagyhatják, javíthatják vagy újragenerálhatják, a korábbi javítással összevetve.
+- **Utófeltétel:** Gyakorlásba csak az aktuális verzióhoz hű kérdés kerül.
 
-### UC4: Gyakorlás és értékelés
+### UC6: Megosztott tananyag bővítése saját jegyzetekkel
 
-- **Szereplő:** Felhasználó
-- **Előfeltétel:** A feladatbankban van jóváhagyott kérdés.
+- **Szereplő:** Tanuló
+- **Előfeltétel:** A könyvtárban van egy más által megosztott tananyag.
 - **Fő folyamat:**
-  1. A felhasználó kiválasztja a témákat, a nehézséget és a feladatszámot.
-  2. A rendszer seed alapján összeállítja a sort a témalefedettség és a korábbi próbálkozások figyelembevételével, a duplikátumok kizárásával.
-  3. A felhasználó kitölti és beadja a sort.
-  4. A rendszer a feleletválasztós válaszokat determinisztikusan, a rövid válaszokat rubric alapján AI-val értékeli, majd megmutatja az eredményt a forrásrészlettel.
-- **Alternatív / hibafolyamatok:**
-  - Ha nincs elég kérdés, a rendszer megnevezi a nem teljesíthető feltételt, és kisebb sort ajánl.
-  - A bizonytalan AI-értékelés felülvizsgálati jelzést kap, és a felhasználó elfogadásáig nem számít bele a haladásba.
-  - A felhasználó jelentheti a hibás kérdést vagy értékelést. A jelentett kérdés felülvizsgálandó lesz, a jelentett értékelés kimarad az eredményből.
-- **Utófeltétel:** A válaszok és a témánkénti eredmény eltárolódtak.
-
-### UC5: Haladás megtekintése
-
-- **Szereplő:** Felhasználó
-- **Fő folyamat:** A felhasználó témánként látja az eredményességét és a gyenge témáit, és ezekből új gyakorlósort indíthat.
+  1. A tanuló saját jegyzetet tölt fel a tananyaghoz, amely a megszokott módon konvertálódik és darabolódik.
+  2. A bővítmény az eredeti tananyagtól elkülönítve, a tanuló nevével jelenik meg, az eredeti tananyag és szerzője mindig látható marad.
+  3. A bővítmény részleteiből ugyanúgy generálhat, hagyhat jóvá és gyakorolhat kérdéseket, mint az eredetiből.
+- **Alternatív / hibafolyamatok:** Ha a bővítményt vagy az eredeti tananyagot módosítják, az érintett kérdések a szokásos módon felülvizsgálandók vagy érvénytelenek lesznek. A bővített tananyag nem osztható tovább.
+- **Utófeltétel:** A bővítmény a tanuló privát tartalma, a gyakorlásban az eredetivel együtt egy tananyagnak számít.
 
 ### Kérdés életciklusa
 
@@ -91,24 +109,25 @@ stateDiagram-v2
 
 | Követelmény | Elfogadási kritérium | Prioritás |
 | --- | --- | --- |
-| A felhasználó szöveges tananyagot tölthet fel (.txt, .md, .docx, szöveges PDF) vagy illeszthet be, amelyből a rendszer kinyeri a szöveget és részletekre bontja. | Adott érvényes fájl, a rendszer verziót hoz létre, és minden részlet kulcsot és hash-t kap. Ugyanaz a bemenet mindig ugyanazokat a részleteket adja. | Kötelező |
-| Kérdés csak jóváhagyott részletből generálható, és a forrására hivatkozik. | Minden mentett kérdés tartalmazza a részlet azonosítóját, verzióját és hash-ét, a forrásidézete pedig szó szerint szerepel a részletben. | Kötelező |
-| A generálás teljes dokumentum és visszakeresett részletek módban is futtatható. | Mindkét módban keletkeznek kérdések, és rögzül a mód, az idő és a tokenfelhasználás. | Kötelező |
-| Érvénytelen LLM-kimenet nem kerül az adatbázisba. | Sémának nem megfelelő válasznál nem jön létre kérdés, a hiba naplózódik. | Kötelező |
-| A rendszer felismeri a közel azonos kérdéseket. | A küszöbnél hasonlóbb kérdések egy csoportba kerülnek, és egy sorba csoportonként legfeljebb egy kerül. | Kötelező |
-| Kérdés csak jóváhagyás után kerül a feladatbankba, és jóváhagyás előtt szerkeszthető. | Vázlat kérdés nem jelenik meg gyakorlósorban. A szerkesztett változat validálva mentődik, az AI-eredeti megmarad. | Kötelező |
-| A nehézségi kategóriák szerkeszthetők. | A felhasználó kategóriát hozhat létre, nevezhet át, és módosíthatja a kérdés kategóriáját. | Kötelező |
-| Tananyagváltozáskor az érintett kérdések kikerülnek a gyakorlásból, és az állapotuk látható. | Megváltozott forrásnál a kérdés felülvizsgálandó, megszűntnél érvénytelen lesz. A nem érintett kérdések változatlanok. | Kötelező |
-| Újrageneráláskor a kézi javítás összevethető az új tervezettel. | A két változat egymás mellett, a különbségek kiemelésével jelenik meg. | Kötelező |
-| A gyakorlósor feltételek szerint, reprodukálhatóan áll össze. | Azonos seed, paraméterek és feladatbank-állapot esetén a sor azonos. Elégtelen feladatbanknál a rendszer megnevezi a nem teljesíthető feltételt. | Kötelező |
-| A véletlenszerű összeállítás összehasonlító módszerként elérhető. | Ugyanazzal a seeddel mindkét módszer lefuttatható. | Kötelező |
-| A feleletválasztós értékelés determinisztikus, a rövid válaszoké rubric alapú. | Feleletválasztósnál nincs LLM-hívás. Rövid válasznál szempontonkénti pont és indoklás mentődik, bizonytalan esetben jelzéssel. | Kötelező |
-| A felhasználó jelentheti a hibás kérdést vagy értékelést. | A jelentés típussal rögzül, a kérdés kikerül a gyakorlásból, illetve a válasz az eredményből. | Kötelező |
-| A felhasználó témánként követheti a haladását. | A válaszok és a témánkénti eredmény újratöltés után is elérhetők. | Kötelező |
-| Létezik reprodukálható értékelési eljárás. | Ugyanazzal a konfigurációval és mentett LLM-kimenetekkel két futás azonos eredményt ad. | Kötelező |
-| Az eredmény kérdésenként megjeleníti a magyarázatot és a forrásrészletet. | Adott egy értékelt válasz, az eredményoldalon a kérdés magyarázata és forrásrészlete látható. | Ajánlott |
-| A felhasználó a haladás oldalon egy gyenge témából közvetlenül új gyakorlósort indíthat. | Adott egy gyengének jelölt téma, a gyakorlás indításakor a beállítás erre a témára előtöltődik. | Ajánlott |
-| A rendszer prezentációs anyagból (.pptx) is kinyeri a szöveget. | Adott egy .pptx fájl, a diák szövege és az előadói jegyzetek kinyerődnek, a diák címei címsorként szolgálnak. | Lehetséges |
+| Regisztráció és bejelentkezés, elkülönített adatokkal. | Más privát tananyaga és kérdésbankja nem érhető el. | Kötelező |
+| .txt tananyag feltöltése bővíthető konverteren keresztül. | Ugyanaz a bemenet mindig ugyanazt a belső formátumot adja. Új formátumhoz csak új konverter kell. | Kötelező |
+| Darabolás kézi ellenőrzéssel és javítással. | Minden részlet kulcsot és hash-t kap, és csak jóváhagyott darabolásból generálható kérdés. | Kötelező |
+| Tananyag nyilvánossá tétele és könyvtárhoz adása. | A nyilvános tananyag kereshető, a tanuló használhatja, de nem módosíthatja. | Kötelező |
+| Saját kérdésbank tananyagonként. | A tanuló kérdései a privát bankjába kerülnek, nyilvános tananyagnál a tulajdonos bankja is használható. | Kötelező |
+| Forráshoz kötött kérdésgenerálás két módban (teljes dokumentum és RAG). | Minden kérdés tartalmazza a hivatkozott részlet azonosítóját, verzióját és hash-ét, és a részletből kiderül, hogy a kérdés a tananyag ismeretével megválaszolható. Rögzül a mód, az idő és a tokenfelhasználás. | Kötelező |
+| Érvénytelen LLM-kimenet nem mentődik. | Sémahibás válasznál nem jön létre kérdés, a hiba naplózódik. | Kötelező |
+| Jóváhagyás, szerkesztés, nehézségi kategóriák és duplikátumszűrés. | Vázlat kérdés nem kerül gyakorlásba, az AI-eredeti megmarad, egy sorba duplikátumcsoportonként egy kérdés kerül. | Kötelező |
+| Érvénytelenítés tananyagváltozáskor. | Az érintett kérdések minden ráépülő bankban felülvizsgálandók vagy érvénytelenek lesznek, újrageneráláskor a javítással összevethető tervezet készül. | Kötelező |
+| Reprodukálható gyakorlósor egy tananyag több fejezetéből. | Tananyagok nem keverednek, azonos seed és állapot mellett a sor azonos, a véletlenszerű módszer összehasonlításként elérhető. | Kötelező |
+| Értékelés és jelentés. | Feleletválasztósnál nincs LLM-hívás, rövid válasznál szempontonkénti pont és indoklás mentődik. A jelentés típussal rögzül. | Kötelező |
+| Haladáskövetés és reprodukálható értékelési eljárás. | Az eredmények tananyagonként elérhetők, és két azonos konfigurációjú futás azonos eredményt ad. | Kötelező |
+| Megosztott tananyag bővítése saját jegyzetekkel. | Az eredeti tananyag nem módosul, a bővítmény elkülönítve jelenik meg, és a kérdésgenerálás, a jóváhagyás és az érvénytelenítés rá is vonatkozik. A bővített tananyag nem osztható tovább. | Ajánlott |
+| Tanulási mód párhuzamos tananyagokkal és fejezetvégi ellenőrző sorral. | A rendszer tananyagonként megjegyzi, hol tart a felhasználó. | Ajánlott |
+| Eredmény forrásrészlettel, új sor gyenge témából, változásértesítés, keresés a nyilvános tananyagok között. | A funkciók elérhetők a felületen. | Ajánlott |
+| Ellenőrzött oktatói jelölés. | Az oktató által validált tartalom jelölést kap. | Lehetséges |
+| Tananyag megosztása linken keresztül. | Egy privát tananyag akár egy linken keresztül is megosztható. | Lehetséges |
+| További konverterek (.md, .docx, szöveges PDF, .pptx). | A konverter a címsorok megőrzésével állítja elő a belső formátumot. | Lehetséges |
+| Ismétlési ütemezés és natív mobilalkalmazás Capacitorral. | A funkciók a meglévő backenddel működnek. | Lehetséges |
 
 A **Kötelező** prioritás a végtermékhez szükséges elemet jelöl, az **Ajánlott** fontosat, a **Lehetséges** pedig olyat, ami csak idő esetén készül el.
 
@@ -116,87 +135,90 @@ A **Kötelező** prioritás a végtermékhez szükséges elemet jelöl, az **Aj�
 
 | Szabály vagy korlát | Indoklás |
 | --- | --- |
-| Minden kérdés egy jóváhagyott részlet adott verziójához kötődik, és szó szerinti forrásidézetet tartalmaz. | Visszakövethetőség és automatikusan ellenőrizhető forráshoz köthetőség. |
-| A kérdés állapota csak az életciklus-diagram átmeneteivel változhat, és gyakorlásba csak jóváhagyott kérdés kerülhet. | Hibás, jelentett vagy elavult kérdés nem jut el a felhasználóhoz. |
-| A rendszer azt garantálja, hogy a kérdés a tananyaghoz hű, azt nem, hogy a tananyag helyes. | A jóváhagyás a forrással való összevetés, nem szakértői ítélet. |
-| A rövid válaszos kérdésnek kötelező referencia-válasza és rubricja van. Az értékelés bizonytalan, ha a független pontozások eltérnek, vagy a pontszám a megfelelési határ közelébe esik. | Az LLM saját magabiztossága nem megbízható, ezért a bizonytalanságot mérni kell. |
-| A gyakorlósor eltárolja a seedet, a paramétereket és a kiválasztott kérdések azonosítóit. | Reprodukálhatóság a feladatbank későbbi változása után is. |
-| A tartományi logika nem függ a felülettől, az adatbázistól és az LLM-től. | Tesztelhetőség és reprodukálhatóság. |
-| LLM-hívás csak szerveroldalon történik, API-kulcs és személyes adat nem kerülhet a repóba. | Biztonság. |
+| A tananyagot csak a tulajdonosa, a kérdésbankot csak a gazdája módosíthatja. | Egyértelmű felelősség. |
+| Minden kérdés egy részlet adott verziójához kötődik, és a hivatkozott részletből kiderül, hogy a kérdés a tananyaghoz illik és a tananyag ismeretével megválaszolható. | Visszakövethetőség és ellenőrizhető forráskötés. |
+| A tananyag validálása a darabolás ellenőrzése, a kérdésé a felhasználó tudásán és a hivatkozott részleten alapul. A rendszer a tananyaghoz való hűséget garantálja, a tananyag helyességét nem. | A rossz határú részlet félrevezető forrást adna. |
+| Gyakorlásba csak jóváhagyott kérdés kerül, az állapot csak az életciklus-diagram szerint változhat. | Hibás vagy elavult kérdés nem jut el a felhasználóhoz. |
+| A tulajdonos nyilvános kérdésbankjába csak az általa jóváhagyott kérdés kerülhet. | A nyilvános tartalomért a tulajdonos felel. |
+| Egy gyakorlósor egyetlen tananyagból áll, de több fejezetet is lefedhet. A tananyag és a tanuló saját bővítménye egy tananyagnak számít. | Értelmezhető haladáskövetés. |
+| A megosztott tananyagot a tanuló csak saját bővítménnyel egészítheti ki, az eredetit nem módosíthatja. A bővítményre ugyanaz a kérdésgenerálás, jóváhagyás és érvénytelenítés vonatkozik, és a bővített tananyag nem osztható tovább. | Az eredeti szerzőség megmarad, a továbbosztás szabályai későbbre maradnak. |
+| A bemenetet mindig konverter alakítja a belső formátumra. | Új formátum a többi modul módosítása nélkül felvehető. |
+| A rövid válaszos kérdésnek kötelező referencia-válasza és rubricja van. Az értékelés bizonytalan, ha a független pontozások eltérnek, vagy a pontszám a megfelelési határ közelébe esik. | Az LLM saját magabiztossága nem megbízható. |
+| A gyakorlósor eltárolja a seedet, a paramétereket és a kérdésazonosítókat. | Reprodukálhatóság későbbi változás után is. |
+| A tartományi logika független a felülettől, az adatbázistól és az LLM-től. AI-hívás csak szerveroldalon történik. | Tesztelhetőség és biztonság. |
 
 ## 5. Felhasználói felület és munkafolyamat
 
-A felület jelenleg csak kezdeti, demó jellegű tervezet, a pontos képernyőket és elrendezést a 2. prezentációig wireframe-ek vagy prototípus formájában dolgozom ki. Az elképzelés egy mobilon és asztali gépen is használható webes felület négy fő menüponttal (Tananyagok, Gyakorlás, Haladás, Felülvizsgálat). A legfontosabb képernyő a jóváhagyási nézet, ahol a generált kérdés és a forrásrészlet egymás mellett látható, a forrásidézet kiemelésével. A fő folyamatban a felhasználó feltölti a jegyzetét, jóváhagyja a részleteket és a kérdéseket, majd gyakorol és követi a haladását.
+A felület jelenleg demó jellegű tervezet, a pontos képernyőket a 2. prezentációig wireframe-ek vagy prototípus formájában dolgozom ki. Az elképzelés egy reszponzív webes felület öt menüponttal (Könyvtár, Tanulás, Gyakorlás, Haladás, Felülvizsgálat). A legfontosabb képernyő a jóváhagyási nézet, ahol a kérdés és a hivatkozott forrásrészlet egymás mellett látható. 
 
 ## 6. Nem funkcionális követelmények
 
 | Követelmény | Ellenőrzés módja |
 | --- | --- |
-| A gyakorlósor és a darabolás reprodukálható, azonos bemenetre azonos eredményt ad. | Automatizált tesztek két futás összehasonlításával. |
-| Az AI hibája vagy elérhetetlensége nem okoz adatvesztést. | Integrációs teszt mockolt, hibázó LLM-mel. |
-| A tartományi logika adatbázis, felület és LLM nélkül tesztelhető. | A tesztek külső függőség nélkül lefutnak. |
-| A rövid válaszok AI-pontozása a kézzel ellenőrzött mintákon legalább x%-ban egyezik (x egyeztetendő). | Értékelési eljárás a tesztkészleten. |
-| A felület 360 px szélességtől használható, és új felhasználó dokumentáció nélkül ki tud tölteni egy sort. | Kézi teszt és megfigyeléses teszt. |
+| A konverzió, a darabolás és a gyakorlósor azonos bemenetre azonos eredményt ad. | Automatizált tesztek két futás összehasonlításával. |
+| Az AI hibája nem okoz adatvesztést. | Integrációs teszt hibázó, mockolt LLM-mel. |
+| A tartományi logika külső függőség nélkül tesztelhető. | A tesztek adatbázis és LLM nélkül lefutnak. |
+| Az AI-pontozás legalább 70%-ban egyezik a kézivel (legfeljebb egypontos eltérés). | Értékelési eljárás a tesztkészleten. |
+| Más privát adata nem érhető el. | Jogosultsági tesztek több felhasználóval. |
+| A felület 360 px szélességtől használható. | Kézi és megfigyeléses teszt. |
 | A repóban futtatási útmutató és mintaadat van, titkos kulcs nincs. | Futtatás tiszta környezetben, secret scanning. |
 
 ## 7. Nyitott kérdések és kockázatok
 
 | Kérdés / kockázat | Hatás | Felelős | Feloldás / döntés |
 | --- | --- | --- | --- |
-| Jól értelmezem-e, hogy a jóváhagyó és a gyakorló ugyanaz a felhasználó? | A szerepmodell és a hatókör. | Szerző, témavezető | Egyeztetendő. A brief szövege erre utal. |
-| A felhasználó észreveszi-e a hibás kérdést, ha éppen tanulja az anyagot? | Hibás kérdés kerülhet a feladatbankba. | Szerző | Forrásidézet kiemelése és automatikus ellenőrzése, utólagos jelentés. A kiértékelés méri a jóváhagyott hibás kérdések arányát. |
-| Mit jelent a „jóváhagyott tananyagegység”? | A részletek jóváhagyási lépése. | Szerző, témavezető | Egyeztetendő. Jelenleg a felhasználó a darabolás után jóváhagyja a részleteket. |
-| Kell-e bejelentkezés? | Adatok elkülönítése. | Szerző, témavezető | Egyeztetendő. Egyszerű e-mail-jelszavas bejelentkezéssel számolok. |
-| Melyik LLM-szolgáltatót és modellt használjam? | Magyar nyelvi minőség és a strukturált kimenet megbízhatósága. | Szerző, témavezető | Egyeztetendő. Az AI SDK miatt a modell cserélhető, ezért több modell is kipróbálható a prototípusban. |
-| Mekkora egyezést várjunk el az AI-pontozás és a kézi pontozás között? | Ez a 6. szakasz x% értéke. | Szerző, témavezető | Egyeztetendő. Javaslat: legfeljebb egypontos eltérés számít egyezésnek, célérték 80%, az első mérések után pontosítva. |
-| Milyen fájltípusok tölthetők fel? | A szövegkinyerés összetettsége és a darabolás módja. | Szerző, témavezető | Egyeztetendő. A terv a .txt, .md, .docx és a szöveges PDF-fájlokkal számol. Kérdés, hogy a prezentációalapú anyagok (.pptx) feldolgozására is szükség van-e. |
+| 1. Mekkora legyen egy részlet, és mi alapján bontsuk tovább a hosszú fejezeteket? | A kérdésgenerálás és a visszakeresés pontossága. | Szerző | Javaslat: fejezetenként, a hosszú szakaszokat bekezdéshatáron bontva, felső méretkorláttal. |
+| 2. Mi legyen a ráépülő kérdésbankokkal és bővítményekkel, ha a tulajdonos visszavonja a megosztást? | A tanulók elveszíthetik a kérdéseiket és a jegyzeteiket. | Szerző, témavezető | Javaslat: megtartják az utolsó verziót, de újat nem kapnak. |
+| 3. Hová kapcsolódik egy bővítmény az eredeti tananyagon belül, és mi történik vele, ha az eredeti fejezet megszűnik? | A bővítmény elhelyezése és érvényessége. | Szerző | Javaslat: a bővítmény fejezethez kapcsolódik, megszűnt fejezetnél a tananyag végére kerül, és a tanuló értesítést kap. |
+| 4. Melyik nyelvi modellt használjuk? | Magyar nyelvi minőség, strukturált kimenet. | Szerző | A prototípusban több modell kipróbálása után dől el. |
+| 5. Hogyan mérjük a közel azonos kérdéseket, és mekkora legyen a küszöb? | Duplikátumszűrés és ismétlődés mérése. | Szerző | Javaslat: determinisztikus szöveghasonlóság, a küszöb kézzel jelölt párokon hangolva. |
+| 6. Hogyan mérjük az AI-értékelés bizonytalanságát? | A felülvizsgálati jelzés megbízhatósága. | Szerző | Javaslat: több független pontozás, eltérési küszöb és a megfelelési határ körüli sáv. |
 
 ## 8. Kezdeti technikai javaslat
 
 ### Javasolt megoldás
 
-A rendszer egyetlen Next.js alkalmazás. A tartományi mag tiszta TypeScript modul, amely a darabolást, a hash-elést, a kérdések állapotátmeneteit, az érvénytelenítést, a forrásidézet-ellenőrzést, a duplikátumszűrést, a seedelt összeállítást és a feleletválasztós értékelést végzi. Erre épül a szerveroldali réteg (Server Actions, Zod-validáció, Prisma, szövegkinyerés, LLM-hívások, visszakeresés) és a React kliens. Az értékelési szkript ugyanazt a magot és LLM-réteget használja, így azt méri, amit az alkalmazás ténylegesen csinál.
+Egyetlen SvelteKit alkalmazás. A tartományi mag tiszta TypeScript modul, amely a konverziót, a darabolást, az állapotátmeneteket, az érvénytelenítést, a forráshivatkozás ellenőrzését, a duplikátumszűrést, a seedelt összeállítást és a feleletválasztós értékelést végzi. Erre épül a szerveroldali réteg (Zod, Prisma, jogosultság, visszakeresés, AI-réteg) és a Svelte kliens. Az értékelési szkript ugyanazt a magot és AI-réteget használja.
 
 ### Kutatási kérdések
 
 | Vizsgálat | Összehasonlított változatok | Mért értékek |
 | --- | --- | --- |
-| Generálás kontextusa | Teljes dokumentum, illetve visszakeresett részletek (RAG) | Sémabeli érvényesség, forráshoz köthetőség, tartalmi helyesség, megválaszolhatóság, a referencia-válasz helyessége, ismétlődés, kézi javítási igény, késleltetés, tokenfelhasználás |
-| Rövid válaszok értékelése | AI-pontszám, illetve kézzel ellenőrzött pontszám | Egyezési arány, a bizonytalansági jelzés pontossága |
+| Generálás kontextusa | Teljes dokumentum, illetve RAG | Sémabeli érvényesség, forráshoz köthetőség, tartalmi helyesség, megválaszolhatóság, referencia-válasz helyessége, ismétlődés, kézi javítási igény, késleltetés, tokenfelhasználás |
+| Rövid válaszok értékelése | AI-pontszám, illetve kézi pontszám | Egyezési arány, a bizonytalansági jelzés pontossága |
 | Feladatsor-összeállítás | Véletlenszerű, illetve feltételes | Témalefedettség, ismétlés, teljesíthetőség, összeállítási idő |
 
 ### Technológiai irány
 
 | Terület | Jelölt technológia / megközelítés | Megfontolás oka | Nyitott kérdés / kockázat |
 | --- | --- | --- | --- |
-| Alkalmazás | Next.js App Router, React, TypeScript | Egy kódbázis kliensnek és szervernek | — |
-| Adat | PostgreSQL, Prisma, Zod | Típusos, validált adatfolyam az LLM-től az adatbázisig | — |
-| Hitelesítés | Better Auth vagy Auth.js, e-mail és jelszó | Kész, Next.js-hez illeszkedő megoldás, nem kell saját munkamenet-kezelést írni | A szerepmodell egyeztetése után véglegesíthető. |
-| Szövegkinyerés | Jelölt könyvtárak: mammoth (.docx), pdfjs-dist (PDF) | Kiforrott, JavaScriptből használható eszközök | A PDF-ekből a címsorok és a szerkezet csak részben nyerhető ki. |
-| Visszakeresés | PostgreSQL teljes szöveges keresés magyar nyelvi konfigurációval, szükség esetén pgvector | Nem kell külön szolgáltatás | A magyar szótövezés minősége. A pgvector a Prismában csak nyers SQL-lel érhető el. |
-| AI | Vercel AI SDK, strukturált kimenet közvetlenül Zod-sémával | Szolgáltatófüggetlen, a Zod-sémát kész formában fogadja, és tesztben mockolható | A szolgáltató és a modell kiválasztása. |
-| Tesztelés | Vitest, mockolt LLM, a fő folyamatokra Playwright | Gyors, determinisztikus egységtesztek és néhány végponttól végpontig tartó teszt | — |
-| Futtatás | Docker Compose, saját Node-szerver, hosszú generáláshoz szükség esetén PostgreSQL-alapú feladatsor (pg-boss) | Nincs serverless időkorlát, a környezet reprodukálható | A háttérfeladat csak akkor kell, ha a generálás túl hosszú egy kéréshez. |
+| Alkalmazás | SvelteKit, TypeScript | Egy kódbázis, később Capacitorral natív alkalmazás | A natív apphoz a logikát API-végpontokon is elérhetővé kell tenni. |
+| Adat és hitelesítés | PostgreSQL, Prisma, Zod, Better Auth | Típusos, validált adatfolyam és kész bejelentkezés | — |
+| Konverzió | Saját konverter-interfész, először .txt | Formátumonként bővíthető | A belső formátum szerkezete. |
+| Visszakeresés | PostgreSQL szöveges keresés, szükség esetén pgvector | Nem kell külön szolgáltatás | Magyar szótövezés minősége. |
+| AI | DeepSeek Harness, Zod-validált kimenet | A témavezető javaslata | A nyelvi modell a későbbiekben kerül kiválasztásra. A keretrendszer fejlesztői előzetes változat, tartalék a Vercel AI SDK. |
+| Tesztelés és futtatás | Vitest, Playwright, Docker Compose | Determinisztikus tesztek, reprodukálható környezet | — |
 
 ### Kezdeti architektúravázlat
 
 ```mermaid
 flowchart LR
-  U[Felhasználó] --> UI[React UI]
-  UI --> S[Server Actions + Zod]
-  EV[Értékelési szkript] --> L
-  EV --> CORE
+  U[Felhasználó] --> UI[Svelte UI]
+  UI --> S[SvelteKit szerver + Zod]
   S --> CORE[Tartományi mag]
-  S --> L[LLM-réteg - AI SDK] --> EXT[Külső LLM API]
+  CORE --> CONV[Konverterek]
+  S --> AI[AI-réteg - DeepSeek Harness] --> EXT[Külső LLM API]
   S --> P[Prisma] --> D[(PostgreSQL)]
+  EV[Értékelési szkript] --> CORE
+  EV --> AI
 ```
 
 ### Megvalósíthatóság és technikai kockázatok
 
 | Kockázat / feltételezés | A 2. félévre tervezett validáció | Tartalék megközelítés |
 | --- | --- | --- |
-| Az LLM megbízhatóan ad sémának megfelelő magyar kérdéseket szó szerinti idézettel. | Prototípus egy fejezeten, a séma- és idézethibák mérése. | Strukturált kimenet, szigorúbb prompt, toleránsabb idézetkeresés. |
-| A PDF- és Word-fájlokból kinyert szöveg elég tiszta a daraboláshoz (élőfejek, oldalszámok, többhasábos tördelés nélkül). | Néhány valós jegyzet feldolgozása és a kinyert szöveg kézi ellenőrzése. | A felhasználó a darabolás előtt javíthatja a kinyert szöveget, végső esetben a bemenet sima szövegre és Markdownra szűkül. |
-| A részletek két verzió között megbízhatóan párosíthatók, címsorok nélküli szövegben is. | Tipikus módosítások (javítás, beszúrás, átrendezés) után az érvénytelenített kérdések ellenőrzése, címsoros és címsor nélküli tananyagon is. | Szöveghasonlóság alapú párosítás vagy kézzel megadott részletazonosítók. |
-| Az AI-pontozás elfogadhatóan egyezik az emberivel. | Kézzel pontozott mintakészlet összevetése. | Szigorúbb bizonytalansági küszöb. |
-| Az LLM-kimenet változása miatt a kísérletek nem reprodukálhatók. | A modell- és promptverzió, valamint a nyers kimenet rögzítése. | Kiértékelés a mentett kimenetekből. |
+| A DeepSeek Harness stabilan működik a kiválasztott modellel és strukturált kimenettel. | Korai prototípus egy generálási folyamattal. | Vercel AI SDK. |
+| Az LLM sémahelyes magyar kérdéseket ad, helyes részlethivatkozással. | Mérés egy fejezeten. | Szigorúbb prompt, a részletek egyértelmű azonosítása a promptban. |
+| A részletek két verzió között megbízhatóan párosíthatók. | Tipikus módosítások utáni érvénytelenítés ellenőrzése. | Szöveghasonlóság alapú párosítás. |
+| Egy megosztott tananyag módosítása sok kérdésbankot érint. | Érvénytelenítési idő mérése több felhasználóval. | Háttérfeladatban futó érvénytelenítés. |
+| A kísérletek az LLM változása miatt nem reprodukálhatók. | A modell- és promptverzió és a nyers kimenet rögzítése. | Kiértékelés a mentett kimenetekből. |
