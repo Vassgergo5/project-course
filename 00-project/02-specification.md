@@ -124,7 +124,7 @@ stateDiagram-v2
 | Megosztott tananyag bővítése saját jegyzetekkel. | Az eredeti tananyag nem módosul, a bővítmény elkülönítve jelenik meg, és a kérdésgenerálás, a jóváhagyás és az érvénytelenítés rá is vonatkozik. A bővített tananyag nem osztható tovább. | Ajánlott |
 | Tanulási mód párhuzamos tananyagokkal és fejezetvégi ellenőrző sorral. | A rendszer tananyagonként megjegyzi, hol tart a felhasználó. | Ajánlott |
 | Eredmény forrásrészlettel, új sor gyenge témából, változásértesítés, keresés a nyilvános tananyagok között. | A funkciók elérhetők a felületen. | Ajánlott |
-| Ellenőrzött oktatói jelölés. | Az oktató által validált tartalom jelölést kap. | Lehetséges |
+| Ellenőrzött oktatói jelölés. | Az oktató által validált tartalom jelölést kap. | Ajánlott |
 | Tananyag megosztása linken keresztül. | Egy privát tananyag akár egy linken keresztül is megosztható. | Lehetséges |
 | További konverterek (.md, .docx, szöveges PDF, .pptx). | A konverter a címsorok megőrzésével állítja elő a belső formátumot. | Lehetséges |
 | Ismétlési ütemezés és natív mobilalkalmazás Capacitorral. | A funkciók a meglévő backenddel működnek. | Lehetséges |

@@ -33,14 +33,14 @@ A projekt egy webalkalmazás, amely szöveges tananyagok tanulását és gyakorl
 - Megosztott tananyag bővítése saját jegyzetekkel, az eredeti módosítása nélkül. A bővített tananyag nem osztható tovább.
 - AI-alapú kérdésgenerálás részlethivatkozással, jóváhagyás, szerkesztés, nehézségi kategóriák és duplikátumszűrés.
 - Érvénytelenítés tananyagváltozáskor minden ráépülő kérdésbankban, újrageneráláskor a kézi javítással összevethető tervezettel.
-- Tanulási mód több tananyag párhuzamos tanulásával, és gyakorlósor egy tananyag több fejezetéből, témalefedettség, feladatszám és korábbi próbálkozások alapján, reprodukálhatóan, a kérdésbank elégtelenségének kezelésével.
+- Tanulási mód több tananyag párhuzamos tanulásával és gyakorlósor egy tananyag több fejezetéből, témalefedettség, feladatszám és korábbi próbálkozások alapján, reprodukálhatóan, a kérdésbank elégtelenségének kezelésével.
 - Determinisztikus feleletválasztós és rubric-alapú AI-értékelés felülvizsgálati jelzéssel.
 - RAG-alapú generálás, jelentés hibás tartalomról, haladáskövetés, reszponzív felület.
 - Reprodukálható értékelési eljárás, automatizált tesztek, futtatási útmutató és mintaadatok.
 
-### Nincs benne a hatókörben
+### Lehetséges bővítések
 
-- Hivatalos vizsgáztatás, osztályzás.
+- Hivatalos vizsgáztatás, osztályozás.
 - Kép-, hang- és videóalapú tananyag (OCR, átírás).
 - Kettőnél több feladattípus és esszéjellegű válaszok.
 - Különböző tananyagok keverése egy gyakorlósorban.

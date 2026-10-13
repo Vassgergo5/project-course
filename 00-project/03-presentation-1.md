@@ -28,10 +28,10 @@ Projektazonosító: 2026-SD-03
 <!-- @gap 4 -->
 <!-- @color gray -->
 #### ___Gyakorolni vagy felkészülni egy tananyagból___  
-- Manuálisan . . .
+- Manuálisan 
 	- sok időt vesznek igénybe az előkészületek
 	- nehéz a „jó” kérdések kigyűjtése és megfogalmazása
-- Az AI . . .
+- Az AI
 	- kérdései gyakran túl egyszerűek
 	- általában csak feleletválasztós kérdésekre korlátozódik
 	- a rövid válaszokat nem rögzített szempontok alapján értékeli
@@ -83,7 +83,6 @@ Projektazonosító: 2026-SD-03
 
 <!-- @gap 2 -->
 <!-- @color gray -->
-##### **__EGYETLEN FIÓKTÍPUS__**  
 
 <!-- @gap 4 -->
 | Szerep     | Mit szeretne?                                 |
@@ -95,27 +94,26 @@ Projektazonosító: 2026-SD-03
 ##### *___A szerepet a tananyaggal való viszony határozza meg.___*
 
 ---
-<!-- @slide Tervezett hatókör (benne van) -->
+<!-- @slide Tervezett hatókör -->
 <!-- @slide-theme slate blue slate -->
 <!-- @slide-bg slate-900 -->
 
 <!-- @set-colors blue sky slate -->
 ## _Tervezett hatókör_
 
-### __Benne van__
-
+<!--@gap 7-->
 <!-- @color gray -->
 - .txt feltöltés, darabolás ellenőrzéssel
 - Privát vagy nyilvános tananyag, saját kérdésbank
 - AI-kérdések (feleletválasztós, rövid válaszos)
-- Jóváhagyás, szerkesztés, nehézség, duplikátumszűrés
-- Kérdés-érvénytelenítés a tananyag változásakor
+- Jóváhagyás, szerkesztés, nehézségi szint, duplikátumszűrés
+- Kérdések érvénytelenítése a tananyag változásakor
 - Tanulási mód, reprodukálható gyakorlósor
 - Feleletválasztós: determinisztikus, rövid válasz: AI-rubric
 - Haladáskövetés
 
 ---
-<!-- @slide Hatókör (kutatási rész) -->
+<!-- @slide Kutatási rész -->
 <!-- @slide-theme slate blue slate -->
 <!-- @slide-bg slate-900 -->
 
@@ -131,35 +129,31 @@ Projektazonosító: 2026-SD-03
 | Rövid válaszok értékelése | AI-pontozás vs. kézi pontozás |
 
 ---
-<!-- @slide Hatókör (nincs benne) -->
+<!-- @slide Lehetséges bővítések -->
 <!-- @slide-theme slate blue slate -->
 <!-- @slide-bg slate-900 -->
 
 <!-- @set-colors blue sky slate -->
-### _Nincs benne_
+### _Lehetséges bővítések_
 
+<!-- @gap 7 -->
 <!-- @color gray -->
-- Hivatalos vizsgáztatás és osztályzás
+- Hivatalos vizsgáztatás és osztályozás
 - Kép-, hang- és videóalapú tananyag
 - Kettőnél több feladattípus, esszéválaszok
 - Külön oktatói fióktípus, saját modell tanítása
-
-<!-- @gap 4 -->
-#### __Lehetséges bővítések__
-
-<!-- @columns 2 -->
-További fájltípusok  
-Ellenőrzött oktatói jelölés  
-Linkes megosztás  
-Natív mobilalkalmazás
+- További fájltípusok  
+- Ellenőrzött oktatói jelölés  
+- Linkes megosztás  
+- Natív mobilalkalmazás
 
 ---
-<!-- @slide Kezdeti felhasználói utak -->
+<!-- @slide Felhasználói utak -->
 <!-- @slide-theme slate blue slate -->
 <!-- @slide-bg slate-900 -->
 
 <!-- @set-colors blue sky slate -->
-## _Kezdeti felhasználói utak_
+## _Felhasználói utak_
 
 <!-- @gap 15 -->
 ```mermaid
