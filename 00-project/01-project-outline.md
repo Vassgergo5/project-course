@@ -3,6 +3,7 @@ name: Vass Gergő Dániel
 neptun: DYRKAU
 id: 2026-SD-03
 github: https://github.com/Vassgergo5/project-course
+trello: https://trello.com/b/Ju7G5Ho0/project-1-course
 ---
 # Tananyaghoz kötött feladatgeneráló és gyakorlóalkalmazás
 
